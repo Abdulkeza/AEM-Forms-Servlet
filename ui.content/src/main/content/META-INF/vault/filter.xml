@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workspaceFilter version="1.0">
+    <filter root="/conf/Forms-Servlet" mode="merge"/>
+    <filter root="/content/Forms-Servlet" mode="merge"/>
+    <filter root="/content/dam/Forms-Servlet/asset.jpg" mode="merge"/>
+    <filter root="/content/experience-fragments/Forms-Servlet" mode="merge"/>
+</workspaceFilter>

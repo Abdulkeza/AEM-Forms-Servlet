@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workspaceFilter version="1.0">
+    <filter root="/apps/Forms-Servlet/clientlibs"/>
+    <filter root="/apps/Forms-Servlet/components"/>
+    <filter root="/apps/Forms-Servlet/i18n"/>
+</workspaceFilter>
