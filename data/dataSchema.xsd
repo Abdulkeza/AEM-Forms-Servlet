@@ -2,7 +2,7 @@
   <xs:element name="data">
     <xs:complexType>
       <xs:sequence>
-        <xs:element type="xs:string" name="name"/>
+        <xs:element type="xs:string" name="fullName"/>
         <xs:element type="xs:byte" name="age"/>
         <xs:element type="xs:string" name="city"/>
       </xs:sequence>

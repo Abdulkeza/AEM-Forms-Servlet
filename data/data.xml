@@ -1,5 +1,5 @@
 <data>
-    <name>John Doe</name>
+    <fullName>John Doe</fullName>
     <age>30</age>
     <city>New York</city>
 </data>

@@ -22,7 +22,7 @@ import com.adobe.aemfd.docmanager.Document;
 import com.adobe.fd.forms.api.FormsService;
 
 @Component(service = { Servlet.class }, property = { "sling.servlet.methods=post",
-        "sling.servlet.paths=/services/generatePdf" })
+        "sling.servlet.paths=/bin/mergedataWithAcroform" })
 public class PdfGenerationServlet2 extends SlingAllMethodsServlet {
 
     private static final long serialVersionUID = 1L;
@@ -37,51 +37,56 @@ public class PdfGenerationServlet2 extends SlingAllMethodsServlet {
         String file_path = request.getParameter("save_location");
 
         try {
-            // Get XDP and XML parts from the request
+            //@desc Get XDP and XML from the request
             InputStream xdpInputStream = request.getPart("xdp_file").getInputStream();
             InputStream xmlInputStream = request.getPart("xml_data_file").getInputStream();
 
-            // Validate XML data against the XML Schema
+            //@desc Validate XML data against the Schema
             validateXmlAgainstSchema(xmlInputStream);
 
-            // Load XDP and XML documents
+            //@desc Load XDP and XML documents
             Document xdpDocument = new Document(xdpInputStream);
             Document xmlDocument = new Document(xmlInputStream);
 
-            // Import XML data into XDP form
+            //@desc Import XML data into XDP form
             Document mergedDocument = formsService.importData(xdpDocument, xmlDocument);
 
-            // Save the merged document as a PDF file
+            //@desc Save the merged document as a PDF in my local pc
             mergedDocument.copyToFile(new File(file_path));
 
-            // Optionally, set the response content type to "application/pdf"
+            //@desc @optional, set the response content type to "application/pdf"
             response.setContentType("application/pdf");
 
-            // Log success
+     
             logger.info("PDF generation successful");
 
         } catch (Exception e) {
-            // Log error
+
             logger.error("Error during PDF generation", e);
 
             try {
                 response.sendError(SlingHttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
             } catch (IOException e1) {
-                // Log exception during error response
+
                 logger.error("Error sending error response", e1);
             }
         }
     }
 
-    private void validateXmlAgainstSchema(InputStream xmlInputStream) throws Exception {
-        // Load the XML Schema
-        SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-        Schema schema = schemaFactory.newSchema(new StreamSource(new File("/path/to/your/schema.xsd")));
 
-        // Create a validator
+    //@desc validation
+    private void validateXmlAgainstSchema(InputStream xmlInputStream) throws Exception {
+        //@desc Load the XML Schema
+        SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+        Schema schema = schemaFactory.newSchema(new StreamSource(
+                new File("/home/me/Desktop/codeland/FORMS/aem-forms-servlet-exercise/data/dataSchema.xsd")));
+
+        //@desc validator
         Validator validator = schema.newValidator();
 
-        // Validate the XML data
+        //@desc Validate the actual XML data
         validator.validate(new javax.xml.transform.stream.StreamSource(xmlInputStream));
     }
 }
+
+// /bin/mergedataWithAcroform

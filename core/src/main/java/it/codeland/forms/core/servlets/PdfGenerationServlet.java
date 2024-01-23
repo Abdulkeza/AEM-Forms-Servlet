@@ -15,7 +15,7 @@ import com.adobe.aemfd.docmanager.Document;
 import com.adobe.fd.forms.api.FormsService;
 
 @Component(service = { Servlet.class }, property = { "sling.servlet.methods=post",
-        "sling.servlet.paths=/bin/mergedataWithAcroform" })
+        "sling.servlet.paths=/services/generatePdf" })
 public class PdfGenerationServlet extends SlingAllMethodsServlet {
 
     private static final long serialVersionUID = 1L;
