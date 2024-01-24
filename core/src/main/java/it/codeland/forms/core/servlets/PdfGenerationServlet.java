@@ -41,17 +41,17 @@ public class PdfGenerationServlet extends SlingAllMethodsServlet {
             Document data_merged_document = formsService.importData(new Document(pdf_document_is),
                     new Document(xml_is));
 
-            // Save the document to the specified file path
+   
             data_merged_document.copyToFile(new File(file_path));
 
-            // Convert PDF content to a byte array
+
             byte[] pdfByteArray = convertInputStreamToByteArray(data_merged_document.getInputStream());
 
-            // Set the content type and headers for PDF response
+   
             response.setContentType("application/pdf");
             response.setHeader("Content-Disposition", "inline; filename=\"" + file_path + "\"");
 
-            // Write the PDF content to the response
+            //  PDF content to the response
             try (ServletOutputStream out = response.getOutputStream()) {
                 out.write(pdfByteArray);
             }
