@@ -215,5 +215,24 @@ Import-Package: javax.annotation;version=0.0.0,*
             <artifactId>aemfd-client-sdk</artifactId>
             <version>6.0.1120</version>
         </dependency>
+
+        <!-- after all -->
+        <!-- <dependency>
+            <groupId>com.adobe.aemfd</groupId>
+            <artifactId>adobe-aemfd-cpdf-bmc</artifactId>
+            <version>3.0.18</version>
+        </dependency> -->
+        <dependency>
+            <groupId>com.adobe.aemfd</groupId>
+            <artifactId>aem-forms-sdk-api</artifactId>
+            <version>1.0.0-52cdda2</version>
+        </dependency>
+        <!-- <dependency>
+            <groupId>com.adobe.aemfd</groupId>
+            <artifactId>forms-sdk</artifactId>
+            <version>release</version>
+            <scope>provided</scope>
+        </dependency> -->
+
     </dependencies>
 </project>

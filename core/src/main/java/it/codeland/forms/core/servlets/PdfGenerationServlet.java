@@ -8,18 +8,17 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import java.io.File;
 import java.io.IOException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 
 import com.adobe.aemfd.docmanager.Document;
 import com.adobe.fd.forms.api.FormsService;
+import javax.servlet.http.HttpServletResponse;
 
 @Component(service = { Servlet.class }, property = { "sling.servlet.methods=post",
-        "sling.servlet.paths=/services/generatePdf" })
+        "sling.servlet.paths=/bin/generatePdf" })
 public class PdfGenerationServlet extends SlingAllMethodsServlet {
 
     private static final long serialVersionUID = 1L;
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Reference
     FormsService formsService;
@@ -40,12 +39,14 @@ public class PdfGenerationServlet extends SlingAllMethodsServlet {
                     new Document(xml_is));
             data_merged_document.copyToFile(new File(file_path));
 
+            //response in my postman
+
+
         } catch (Exception e) {
             try {
                 response.sendError(400, e.getMessage());
             } catch (IOException e1) {
                 // TODO Auto-generated catch block
-                logger.debug("Not working here +++++++");
                 e1.printStackTrace();
             }
         }
