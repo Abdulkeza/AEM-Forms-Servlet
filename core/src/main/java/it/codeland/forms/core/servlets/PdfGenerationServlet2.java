@@ -34,43 +34,40 @@ public class PdfGenerationServlet2 extends SlingAllMethodsServlet {
 
     @Override
     protected void doPost(SlingHttpServletRequest request, SlingHttpServletResponse response) {
-        logger.error("+++++++++ my servlet is not working ++++++");
 
         String file_path = request.getParameter("save_location");
 
         try {
-            // @desc Get XDP and XML from the request
+
             InputStream xdpInputStream = request.getPart("xdp_file").getInputStream();
             InputStream xmlInputStream = request.getPart("xml_data_file").getInputStream();
 
-  
             // @desc Validate XML data against the Schema
             validateXmlAgainstSchema(xmlInputStream);
 
-            // @desc Load XDP and XML documents
+
             Document xdpDocument = new Document(xdpInputStream);
             Document xmlDocument = new Document(xmlInputStream);
 
-            logger.error("#######################+++++++++ before merge document #################");
 
-            // @desc Import XML data into XDP form
+             // Log XDP and XML content for debugging
+            logDocumentContent("XDP Document", xdpDocument);
+            logDocumentContent("XML Document", xmlDocument);
+
+            logger.info("######### before merge document #######");
+
             Document mergedDocument = formsService.importData(xdpDocument, xmlDocument);
 
-            logger.error("&&&&&&&&&&&&&&&&&&&&&& after merge document &&&&&&&&&&&&&&&&&&&&&");
+            logger.error("&&&&&&&&&&& after merge document &&&&&&&&&&&&&&");
 
-            // @desc Save the merged document as a PDF in my local pc
             mergedDocument.copyToFile(new File(file_path));
 
-            logger.error("!!!!!!!!!!!!!!!!!!! prob here !!!!!!!!!!!!!!!!!!!!");
-
-            // @desc @optional, set the response content type to "application/pdf"
             response.setContentType("application/pdf");
-
             logger.info("PDF generation successful");
 
         } catch (Exception e) {
 
-            logger.error("Error during PDF generation", e);
+            logger.error("oooops! Error during PDF generation", e);
 
             try {
                 response.sendError(SlingHttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
@@ -82,19 +79,21 @@ public class PdfGenerationServlet2 extends SlingAllMethodsServlet {
 
     }
 
+
     // @desc validation
     private void validateXmlAgainstSchema(InputStream xmlInputStream) throws Exception {
-        // @desc Load the XML Schema
         SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
         Schema schema = schemaFactory.newSchema(new StreamSource(
                 new File("/home/me/Desktop/codeland/FORMS/aem-forms-servlet-exercise/data/dataSchema.xsd")));
 
-        // @desc validator
         Validator validator = schema.newValidator();
 
-        // @desc Validate the actual XML data
         validator.validate(new javax.xml.transform.stream.StreamSource(xmlInputStream));
     }
+
+
+private void logDocumentContent(String documentName, Document document) {
+    logger.info(documentName + " Content: " + document); 
+}
 }
 
-// /bin/mergedataWithAcroform
