@@ -19,8 +19,8 @@ import org.slf4j.LoggerFactory;
 import com.adobe.aemfd.docmanager.Document;
 import com.adobe.fd.forms.api.FormsService;
 
-@Component(service = { Servlet.class }, property = { "sling.servlet.methods=post",
-        "sling.servlet.paths=/bin/save_me" })
+@Component(service = { Servlet.class }, property = { "sling.servlet.methods=POST",
+        "sling.servlet.paths=/services/save_me" })
 public class SavePdf extends SlingAllMethodsServlet {
 
     private static final long serialVersionUID = 1L;
@@ -31,11 +31,12 @@ public class SavePdf extends SlingAllMethodsServlet {
     @Reference
     PdfConversionUtils pdfConversionUtils; // Inject or instantiate appropriately
 
-    private static final Logger log = LoggerFactory.getLogger(SavePdf.class);
+    private  final Logger log = LoggerFactory.getLogger(this.getClass());
 
     protected void doPost(SlingHttpServletRequest request, SlingHttpServletResponse response) {
+        log.info("++++++++++++++++we are starting now now +++++++++++++++++");
         String file_path = request.getParameter("save_location");
-    
+
         InputStream pdf_document_is = null;
         InputStream xml_is = null;
         javax.servlet.http.Part pdf_document_part = null;
@@ -45,33 +46,33 @@ public class SavePdf extends SlingAllMethodsServlet {
             xml_data_part = request.getPart("xml_data_file");
             pdf_document_is = pdf_document_part.getInputStream();
             xml_is = xml_data_part.getInputStream();
-    
+
             // Check if the uploaded file is an XDP file
             if (isXdpFile(pdf_document_part)) {
                 log.info("############Checking xdp file has started######");
                 // Convert XDP to dynamic PDF
                 pdf_document_is = pdfConversionUtils.convertXdpToDynamicPdf(pdf_document_is);
             }
-    
+
             Document data_merged_document = formsService.importData(new Document(pdf_document_is),
                     new Document(xml_is));
-    
+
             data_merged_document.copyToFile(new File(file_path));
-    
+
             byte[] pdfByteArray = convertInputStreamToByteArray(data_merged_document.getInputStream());
-    
+
             response.setContentType("application/pdf");
             response.setHeader("Content-Disposition", "inline; filename=\"" + file_path + "\"");
-    
+
             // PDF content to the response
             try (ServletOutputStream out = response.getOutputStream()) {
                 out.write(pdfByteArray);
             }
-    
+
         } catch (Exception e) {
             // Log the error using SLF4J
             log.error("Error in SavePdf servlet: {}", e.getMessage(), e);
-    
+
             try {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
             } catch (IOException e1) {
@@ -79,7 +80,7 @@ public class SavePdf extends SlingAllMethodsServlet {
             }
         }
     }
-    
+
     private byte[] convertInputStreamToByteArray(InputStream inputStream) throws IOException {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         byte[] buffer = new byte[1024];

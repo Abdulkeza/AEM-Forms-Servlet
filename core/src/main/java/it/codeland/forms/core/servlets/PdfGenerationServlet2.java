@@ -21,8 +21,8 @@ import java.io.InputStream;
 import com.adobe.aemfd.docmanager.Document;
 import com.adobe.fd.forms.api.FormsService;
 
-@Component(service = { Servlet.class }, property = { "sling.servlet.methods=POST",
-        "sling.servlet.paths=/bin/savePdf" })
+// @Component(service = { Servlet.class }, property = { "sling.servlet.methods=POST",
+//         "sling.servlet.paths=/bin/savePdf" })
 public class PdfGenerationServlet2 extends SlingAllMethodsServlet {
 
     private static final long serialVersionUID = 1L;
