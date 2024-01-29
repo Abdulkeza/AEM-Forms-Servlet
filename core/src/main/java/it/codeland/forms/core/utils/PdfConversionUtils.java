@@ -1,48 +1,41 @@
-package it.codeland.forms.core.servlets;
+package it.codeland.forms.core.utils;
 
 import com.adobe.aemfd.docmanager.Document;
 import com.adobe.fd.forms.api.FormsService;
 import com.adobe.fd.forms.api.PDFFormRenderOptions;
 
+import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
 
+@Component(service = PdfConversionUtils.class)
 public class PdfConversionUtils {
 
     private static final Logger log = LoggerFactory.getLogger(PdfConversionUtils.class);
 
     @Reference
-    FormsService formsService;
-   // private FormsService formsService; 
+    private FormsService formsService;
 
     /**
-     * Converts an XDP InputStream to a dynamic PDF InputStream.
-     *
-     * @param xdpInputStream 
-     * @return InputStream representing the generated dynamic PDF; null in case of an error
+     * @param xdpInputStream
+     * @param xdpTemplatePath
+     * @return
      */
-    public InputStream convertXdpToDynamicPdf(InputStream xdpInputStream) {
+    public InputStream convertXdpToDynamicPdf(InputStream xdpInputStream, String xdpTemplatePath) {
+        log.error("++++++converting xdp started++++++");
         try {
-
-            log.info("++++++converting xdp started++++++");
-            // Specify render options if needed
             PDFFormRenderOptions renderOptions = new PDFFormRenderOptions();
             renderOptions.setAcrobatVersion(com.adobe.fd.forms.api.AcrobatVersion.Acrobat_11);
 
-            // Perform XDP to dynamic PDF conversion
-            Document dynamicPdfDocument = formsService.renderPDFForm("/content/dam/path/to/your/template.xdp", null, renderOptions);
+            Document dynamicPdfDocument = formsService.renderPDFForm(xdpTemplatePath, null, renderOptions);
 
-            // Convert the dynamic PDF Document to InputStream
             return dynamicPdfDocument.getInputStream();
         } catch (Exception e) {
-            // Log the error using SLF4J
             log.error("+++++++++XDP to dynamic PDF conversion failed: {}", e.getMessage(), e);
             return null;
         }
     }
-
-
 }

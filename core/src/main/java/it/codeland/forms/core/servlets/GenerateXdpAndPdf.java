@@ -19,9 +19,11 @@ import org.slf4j.LoggerFactory;
 import com.adobe.aemfd.docmanager.Document;
 import com.adobe.fd.forms.api.FormsService;
 
+import it.codeland.forms.core.utils.PdfConversionUtils;
+
 @Component(service = { Servlet.class }, property = { "sling.servlet.methods=POST",
-        "sling.servlet.paths=/services/save_me" })
-public class SavePdf extends SlingAllMethodsServlet {
+        "sling.servlet.paths=/bin/savePdf" })
+public class GenerateXdpAndPdf extends SlingAllMethodsServlet {
 
     private static final long serialVersionUID = 1L;
 
@@ -29,29 +31,35 @@ public class SavePdf extends SlingAllMethodsServlet {
     FormsService formsService;
 
     @Reference
-    PdfConversionUtils pdfConversionUtils; // Inject or instantiate appropriately
+    PdfConversionUtils pdfConversionUtils;
 
-    private  final Logger log = LoggerFactory.getLogger(this.getClass());
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     protected void doPost(SlingHttpServletRequest request, SlingHttpServletResponse response) {
-        log.info("++++++++++++++++we are starting now now +++++++++++++++++");
+        log.error("++++++++++++++++we are starting now now +++++++++++++++++");
         String file_path = request.getParameter("save_location");
+        String xdpTemplatePath = request.getParameter("xdp_template_path");
 
         InputStream pdf_document_is = null;
         InputStream xml_is = null;
+        // InputStream xdp_document_is = null;
         javax.servlet.http.Part pdf_document_part = null;
         javax.servlet.http.Part xml_data_part = null;
+        // javax.servlet.http.Part xdp_document_part = null;
         try {
             pdf_document_part = request.getPart("pdf_file");
             xml_data_part = request.getPart("xml_data_file");
+
+            // xdp_document_part = request.getPart("xdp_file");
+            log.info("############ooops, we good now ######");
             pdf_document_is = pdf_document_part.getInputStream();
             xml_is = xml_data_part.getInputStream();
+            // xdp_document_is = xdp_document_part.getInputStream();
 
-            // Check if the uploaded file is an XDP file
             if (isXdpFile(pdf_document_part)) {
-                log.info("############Checking xdp file has started######");
-                // Convert XDP to dynamic PDF
-                pdf_document_is = pdfConversionUtils.convertXdpToDynamicPdf(pdf_document_is);
+                log.error("############Checking xdp file has started######");
+                // Convert XDP to dynamic PDF with the provided template path
+                pdf_document_is = pdfConversionUtils.convertXdpToDynamicPdf(pdf_document_is, xdpTemplatePath);
             }
 
             Document data_merged_document = formsService.importData(new Document(pdf_document_is),
@@ -64,13 +72,11 @@ public class SavePdf extends SlingAllMethodsServlet {
             response.setContentType("application/pdf");
             response.setHeader("Content-Disposition", "inline; filename=\"" + file_path + "\"");
 
-            // PDF content to the response
             try (ServletOutputStream out = response.getOutputStream()) {
                 out.write(pdfByteArray);
             }
 
         } catch (Exception e) {
-            // Log the error using SLF4J
             log.error("Error in SavePdf servlet: {}", e.getMessage(), e);
 
             try {
@@ -93,7 +99,6 @@ public class SavePdf extends SlingAllMethodsServlet {
         return byteArrayOutputStream.toByteArray();
     }
 
-    // Check if the file is an XDP file
     private boolean isXdpFile(javax.servlet.http.Part part) {
         return part.getContentType().equalsIgnoreCase("application/vnd.adobe.xdp+xml");
     }
