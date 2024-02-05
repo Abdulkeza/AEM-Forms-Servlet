@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 
 public class XDPToPDFConverter {
 
-    private static final Logger log = LoggerFactory.getLogger(PdfConversionUtils.class);
+    private static final Logger log = LoggerFactory.getLogger(XDPToPDFConverter.class);
 
     /**
      * @param xdpInputStream
@@ -18,16 +18,10 @@ public class XDPToPDFConverter {
     public InputStream convertXdpToDynamicPdf(InputStream xdpInputStream) {
         log.error("++++++converting xdp started++++++");
         try {
-            // Read XDP file as bytes
             byte[] xdpBytes = readInputStream(xdpInputStream);
-
-            // Encode XDP bytes to Base64
             String base64Xdp = Base64.getEncoder().encodeToString(xdpBytes);
 
-            // Decode Base64 to bytes
             byte[] pdfBytes = Base64.getDecoder().decode(base64Xdp);
-
-            // Create Document from bytes (assuming it's a PDF document)
             return new ByteArrayInputStream(pdfBytes);
         } catch (Exception e) {
             log.error("+++++++++XDP to dynamic PDF conversion failed: {}", e.getMessage(), e);
