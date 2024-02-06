@@ -20,6 +20,7 @@ import com.adobe.aemfd.docmanager.Document;
 import com.adobe.fd.forms.api.FormsService;
 
 import it.codeland.forms.core.utils.PdfConversionUtils;
+import com.adobe.pdfg.service.api.GeneratePDFService;
 
 @Component(service = { Servlet.class }, property = { "sling.servlet.methods=POST",
         "sling.servlet.paths=/bin/savePdf" })
@@ -29,6 +30,9 @@ public class GenerateXdpAndPdf extends SlingAllMethodsServlet {
 
     @Reference
     FormsService formsService;
+
+    @Reference
+    GeneratePDFService generatePDFService;
 
     @Reference
     PdfConversionUtils pdfConversionUtils;
@@ -42,19 +46,13 @@ public class GenerateXdpAndPdf extends SlingAllMethodsServlet {
 
         InputStream pdf_document_is = null;
         InputStream xml_is = null;
-        // InputStream xdp_document_is = null;
         javax.servlet.http.Part pdf_document_part = null;
         javax.servlet.http.Part xml_data_part = null;
-        // javax.servlet.http.Part xdp_document_part = null;
         try {
             pdf_document_part = request.getPart("pdf_file");
             xml_data_part = request.getPart("xml_data_file");
-
-            // xdp_document_part = request.getPart("xdp_file");
-            log.info("############ooops, we good now ######");
             pdf_document_is = pdf_document_part.getInputStream();
             xml_is = xml_data_part.getInputStream();
-            // xdp_document_is = xdp_document_part.getInputStream();
 
             if (isXdpFile(pdf_document_part)) {
                 log.error("############Checking xdp file has started######");

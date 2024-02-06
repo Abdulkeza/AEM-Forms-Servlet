@@ -1,14 +1,18 @@
 package it.codeland.forms.core.utils;
 
 import com.adobe.aemfd.docmanager.Document;
-import com.adobe.fd.forms.api.FormsService;
-import com.adobe.fd.forms.api.PDFFormRenderOptions;
+import com.adobe.pdfg.exception.ConversionException;
+import com.adobe.pdfg.exception.FileFormatNotSupportedException;
+import com.adobe.pdfg.exception.InvalidParameterException;
+import com.adobe.pdfg.result.CreatePDFResult;
+import com.adobe.pdfg.service.api.GeneratePDFService;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 @Component(service = PdfConversionUtils.class)
@@ -17,24 +21,26 @@ public class PdfConversionUtils {
     private static final Logger log = LoggerFactory.getLogger(PdfConversionUtils.class);
 
     @Reference
-    private FormsService formsService;
+    private GeneratePDFService generatePDFService;
 
-    /**
-     * @param xdpInputStream
-     * @param xdpTemplatePath
-     * @return
-     */
     public InputStream convertXdpToDynamicPdf(InputStream xdpInputStream, String xdpTemplatePath) {
-        log.error("++++++converting xdp started++++++");
+        log.info("Converting XDP to dynamic PDF started...");
+
         try {
-            PDFFormRenderOptions renderOptions = new PDFFormRenderOptions();
-            renderOptions.setAcrobatVersion(com.adobe.fd.forms.api.AcrobatVersion.Acrobat_11);
+            // Create Document object from InputStream
+            Document xdpDocument = new Document(xdpInputStream);
 
-            Document dynamicPdfDocument = formsService.renderPDFForm(xdpTemplatePath, null, renderOptions);
-
-            return dynamicPdfDocument.getInputStream();
-        } catch (Exception e) {
-            log.error("+++++++++XDP to dynamic PDF conversion failed: {}", e.getMessage(), e);
+            // Invoke createPDF2 method with Document object
+            CreatePDFResult result = generatePDFService.createPDF2(xdpDocument, "xdp", "pdf", xdpTemplatePath, null, null, null);
+            Document createdDocument = result.getCreatedDocument();
+            if (createdDocument != null) {
+                return createdDocument.getInputStream();
+            } else {
+                log.error("Conversion result returned a null document.");
+                return null;
+            }
+        } catch (ConversionException | InvalidParameterException | FileFormatNotSupportedException | IOException e) {
+            log.error("XDP to dynamic PDF conversion failed: {}", e.getMessage(), e);
             return null;
         }
     }
